@@ -474,6 +474,7 @@
     <property name="title">
      <string>帮助</string>
     </property>
+    <addaction name="action_4"/>
     <addaction name="action1"/>
     <addaction name="action_3"/>
     <addaction name="separator"/>
@@ -501,6 +502,11 @@
   <action name="action_3">
    <property name="text">
     <string>检查更新</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>查看帮助</string>
    </property>
   </action>
  </widget>

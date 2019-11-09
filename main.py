@@ -26,6 +26,8 @@ from ui import consume_ui, update_log_ui, add_person_ui, main_ui
 
 import os
 import time
+import webbrowser
+import requests
 
 COST_1 = 10
 COST_2 = 10
@@ -64,6 +66,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         self.action_2.triggered.connect(self.about)
         self.action_3.triggered.connect(self.update_me)
         self.lineEdit.returnPressed.connect(self.search)
+        self.action_4.triggered.connect(lambda: webbrowser.open('https://skycity233.github.io/DataManager/'))
 
     def init_view(self):
 
@@ -278,9 +281,15 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         UpdateWindow.show()
 
     def update_me(self):
-        QMessageBox.information(self, "提示", "此功能暂未完善", QMessageBox.Yes)
-        # requests.get('https://www.lanzous.com/b00n65thg')
-        pass
+
+        api = 'https://api.github.com/repos/skycity233/DataManager'
+        all_page = requests.get(api).json()  # 获取api页面(此时是以json返回的页面)并将该页面转换成字典形式（key-value的存储方式）
+        cur_update = all_page['updated_at']
+        last_update = '2019-11-09T05:57:11Z'
+        if cur_update != last_update:
+            QMessageBox.information(self, "提示", "检查到更新")
+        else:
+            QMessageBox.information(self, "提示", "未检查到更新")
 
     def about(self):
         QMessageBox.information(self, "关于", "作者：王保键\n版本：v1.1.0\n更新日期：2019-11-8", QMessageBox.Yes)
