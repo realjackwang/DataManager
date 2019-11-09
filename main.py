@@ -34,6 +34,7 @@ COST_2 = 10
 COST_3 = 30
 COST_4 = 20
 COLUMN = 7
+CURRENT_VERSION = 'v1.1.0'
 
 
 class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
@@ -67,6 +68,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         self.action_3.triggered.connect(self.update_me)
         self.lineEdit.returnPressed.connect(self.search)
         self.action_4.triggered.connect(lambda: webbrowser.open('https://skycity233.github.io/DataManager/'))
+        self.action.triggered.connect(lambda: QMessageBox.information(self, "温馨提示", "暂不支持"))
 
     def init_view(self):
 
@@ -124,8 +126,9 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         items = self.tableWidget.selectedItems()
         reply = QMessageBox.information(self, "提示", "确定删除已选中的会员？", QMessageBox.Yes | QMessageBox.No)
         if reply == 16384:
+            # TODO(Jack): 这里删除会员的算法不太靠谱
             for i in range(int((len(items) + 1) / COLUMN)):
-                mysql.del_person(items[2 + i * 7].text())
+                mysql.del_person(items[2 + i * COLUMN].text())
             MainWindow.load_initial_data()
 
     def search(self):
@@ -282,17 +285,17 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
 
     def update_me(self):
 
-        api = 'https://api.github.com/repos/skycity233/DataManager'
+        api = 'https://api.github.com/repos/skycity233/DataManager/releases'
         all_page = requests.get(api).json()  # 获取api页面(此时是以json返回的页面)并将该页面转换成字典形式（key-value的存储方式）
-        cur_update = all_page['updated_at']
-        last_update = '2019-11-09T05:57:11Z'
+        cur_update = all_page[0]['tag_name']
+        last_update = CURRENT_VERSION
         if cur_update != last_update:
-            QMessageBox.information(self, "提示", "检查到更新")
+            QMessageBox.information(self, "提示", "发现新版本 " + cur_update)
         else:
             QMessageBox.information(self, "提示", "未检查到更新")
 
     def about(self):
-        QMessageBox.information(self, "关于", "作者：王保键\n版本：v1.1.0\n更新日期：2019-11-8", QMessageBox.Yes)
+        QMessageBox.information(self, "关于", "作者：王保键\n版本：" + CURRENT_VERSION + "\n更新日期：2019-11-8", QMessageBox.Yes)
 
     def change_tab(self):
         if self.tabWidget.currentIndex() == 0:
@@ -327,6 +330,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
                 pass
         elif self.tabWidget.currentIndex() == 2:
             self.tabWidget.setCurrentIndex(0)
+            # TODO(Jack): 管理库存界面待找乔老师确认需求后继续开发
             QMessageBox.information(self, "温馨提示", "暂不支持", QMessageBox.Yes)
 
 
@@ -408,6 +412,7 @@ class DetailWindow(QDialog, add_person_ui.Ui_Form):
 
             DetailWindow.close()
             MainWindow.load_initial_data()
+        # TODO(Jack): 修改信息暂未完善
         QMessageBox.information(self, "温馨提示", "修改失败，此功能待完善。", QMessageBox.Yes)
         return
 
