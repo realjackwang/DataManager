@@ -1,0 +1,96 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'add_person_ui.ui'
+#
+# Created by: PyQt5 UI code generator 5.13.0
+#
+# WARNING! All changes made in this file will be lost!
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_Form(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(242, 349)
+        self.gridLayout = QtWidgets.QGridLayout(Form)
+        self.gridLayout.setObjectName("gridLayout")
+        self.label_8 = QtWidgets.QLabel(Form)
+        self.label_8.setObjectName("label_8")
+        self.gridLayout.addWidget(self.label_8, 2, 2, 1, 1)
+        self.lineEdit_2 = QtWidgets.QLineEdit(Form)
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.gridLayout.addWidget(self.lineEdit_2, 2, 3, 1, 1)
+        self.label_7 = QtWidgets.QLabel(Form)
+        self.label_7.setObjectName("label_7")
+        self.gridLayout.addWidget(self.label_7, 1, 2, 1, 1)
+        self.label = QtWidgets.QLabel(Form)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 2, 1, 1)
+        self.label_2 = QtWidgets.QLabel(Form)
+        self.label_2.setObjectName("label_2")
+        self.gridLayout.addWidget(self.label_2, 5, 2, 1, 1)
+        self.label_6 = QtWidgets.QLabel(Form)
+        self.label_6.setObjectName("label_6")
+        self.gridLayout.addWidget(self.label_6, 4, 2, 1, 1)
+        self.pushButton = QtWidgets.QPushButton(Form)
+        self.pushButton.setObjectName("pushButton")
+        self.gridLayout.addWidget(self.pushButton, 7, 3, 1, 1)
+        self.label_3 = QtWidgets.QLabel(Form)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout.addWidget(self.label_3, 3, 2, 1, 1)
+        self.doubleSpinBox = QtWidgets.QDoubleSpinBox(Form)
+        self.doubleSpinBox.setMaximum(1000000000.0)
+        self.doubleSpinBox.setSingleStep(10.0)
+        self.doubleSpinBox.setObjectName("doubleSpinBox")
+        self.gridLayout.addWidget(self.doubleSpinBox, 3, 3, 1, 1)
+        self.label_9 = QtWidgets.QLabel(Form)
+        self.label_9.setObjectName("label_9")
+        self.gridLayout.addWidget(self.label_9, 6, 2, 1, 1)
+        self.lineEdit = QtWidgets.QLineEdit(Form)
+        self.lineEdit.setObjectName("lineEdit")
+        self.gridLayout.addWidget(self.lineEdit, 0, 3, 1, 1)
+        self.comboBox = QtWidgets.QComboBox(Form)
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.gridLayout.addWidget(self.comboBox, 4, 3, 1, 1)
+        self.dateEdit = QtWidgets.QDateEdit(Form)
+        self.dateEdit.setDateTime(QtCore.QDateTime(QtCore.QDate(1980, 1, 1), QtCore.QTime(0, 0, 0)))
+        self.dateEdit.setMinimumDateTime(QtCore.QDateTime(QtCore.QDate(1752, 9, 14), QtCore.QTime(0, 0, 0)))
+        self.dateEdit.setCalendarPopup(True)
+        self.dateEdit.setObjectName("dateEdit")
+        self.gridLayout.addWidget(self.dateEdit, 5, 3, 1, 1)
+        self.lineEdit_3 = QtWidgets.QLineEdit(Form)
+        self.lineEdit_3.setObjectName("lineEdit_3")
+        self.gridLayout.addWidget(self.lineEdit_3, 6, 3, 1, 1)
+        self.lineEdit_1 = QtWidgets.QLineEdit(Form)
+        self.lineEdit_1.setObjectName("lineEdit_1")
+        self.gridLayout.addWidget(self.lineEdit_1, 1, 3, 1, 1)
+
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+        Form.setTabOrder(self.lineEdit, self.lineEdit_1)
+        Form.setTabOrder(self.lineEdit_1, self.lineEdit_2)
+        Form.setTabOrder(self.lineEdit_2, self.doubleSpinBox)
+        Form.setTabOrder(self.doubleSpinBox, self.comboBox)
+        Form.setTabOrder(self.comboBox, self.dateEdit)
+        Form.setTabOrder(self.dateEdit, self.lineEdit_3)
+        Form.setTabOrder(self.lineEdit_3, self.pushButton)
+
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "添加会员"))
+        self.label_8.setText(_translate("Form", "卡号"))
+        self.label_7.setText(_translate("Form", "手机号"))
+        self.label.setText(_translate("Form", "姓名"))
+        self.label_2.setText(_translate("Form", "生日"))
+        self.label_6.setText(_translate("Form", "性别"))
+        self.pushButton.setText(_translate("Form", "提交"))
+        self.label_3.setText(_translate("Form", "充值金额"))
+        self.label_9.setText(_translate("Form", "备注"))
+        self.comboBox.setItemText(0, _translate("Form", "未选"))
+        self.comboBox.setItemText(1, _translate("Form", "男"))
+        self.comboBox.setItemText(2, _translate("Form", "女"))
