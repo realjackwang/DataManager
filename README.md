@@ -1,3 +1,5 @@
+#指导手册还在编写过程中，请稍后
+
 <p align="center" class="has-mb-6">
 <img class="not-gallery-item" height="90" src="https://github.com/skycity233/Markdown-Res/raw/master/ic_launcher_new.png">
 <br> DataManager<br>
