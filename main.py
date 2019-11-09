@@ -11,7 +11,6 @@
 
 import sqlite3
 
-import qdarkstyle as qdarkstyle
 from PyQt5.QtGui import QFont
 from PyQt5 import QtGui
 
@@ -23,16 +22,9 @@ from PyQt5.QtCore import Qt
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
 
-from main_ui import Ui_MainWindow
-
-import add_person_ui
-import detail_ui
-import consume_ui
-import update_log_ui
-import about_ui
+from ui import consume_ui, update_log_ui, add_person_ui, main_ui
 
 import os
-import requests
 import time
 
 COST_1 = 10
@@ -42,7 +34,7 @@ COST_4 = 20
 COLUMN = 7
 
 
-class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -87,8 +79,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tableWidget_2.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget_2.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.tableWidget_2.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-
-
 
     def invest(self):
         index = self.tableWidget.currentRow()
