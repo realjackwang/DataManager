@@ -13,17 +13,33 @@ import time
 import mysql
 
 
-def bill_in(cost, name, phone, card):
-    balance = float(mysql.query('balance_tb', '_id', '1')[0][2])
-    balance += float(cost)
+def bill_in(cost, name, phone, card, balance, id):
+    # balance = float(mysql.query('balance_tb', '_id', '1')[0][2])
+    # balance += float(cost)
     mysql.add_bill(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                   '收入', str(cost), str(balance), str(name), str(phone), str(card))
-    mysql.change_balance(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(balance))
+                   '充值', '+' + str(cost), str(balance), str(name), str(phone), str(card), id)
+    # mysql.change_balance(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(balance))
 
 
-def bill_out(cost, name, phone, card):
-    balance = float(mysql.query('balance_tb', '_id', '1')[0][2])
-    balance -= float(cost)
+def bill_out(cost, name, phone, card, balance, id):
+    # balance = float(mysql.query('balance_tb', '_id', '1')[0][2])
+    # balance -= float(cost)
     mysql.add_bill(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                   '支出', str(cost), str(balance), str(name), str(phone), str(card))
-    mysql.change_balance(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(balance))
+                   '消费', '-' + str(cost), str(balance), str(name), str(phone), str(card), id)
+    # mysql.change_balance(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(balance))
+
+
+def person_out(cost, name, phone, card, balance, id):
+    # balance = float(mysql.query('balance_tb', '_id', '1')[0][2])
+    # balance -= float(cost)
+    mysql.add_bill(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                   '销户', '-' + str(cost), str(balance), str(name), str(phone), str(card), id)
+    # mysql.change_balance(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(balance))
+
+
+def person_in(cost, name, phone, card, balance, id):
+    # balance = float(mysql.query('balance_tb', '_id', '1')[0][2])
+    # balance -= float(cost)
+    mysql.add_bill(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                   '建户', '+' + str(cost), str(balance), str(name), str(phone), str(card), id)
+    # mysql.change_balance(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(balance))
