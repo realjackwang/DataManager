@@ -1,0 +1,17 @@
+<RCC>
+  <qresource prefix="main">
+    <file>data.png</file>
+    <file>datamanager.ico</file>
+    <file>上一页.png</file>
+    <file>下一页.png</file>
+    <file>充值.png</file>
+    <file>电话.png</file>
+    <file>卡号.png</file>
+    <file>姓名.png</file>
+    <file>搜索.png</file>
+    <file>充值卡.png</file>
+    <file>开户.png</file>
+    <file>退补量.png</file>
+    <file>销户.png</file>
+  </qresource>
+</RCC>

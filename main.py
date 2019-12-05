@@ -77,7 +77,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         self.action1.triggered.connect(self.update_log)
         self.action_2.triggered.connect(self.about)
         self.action_3.triggered.connect(self.update_me)
-        self.lineEdit.returnPressed.connect(lambda: self.search_data(card=self.lineEdit.text()))
+        self.lineEdit.returnPressed.connect(self.search_data_by_card)
         self.action_4.triggered.connect(lambda: webbrowser.open('https://skycity233.github.io/DataManager/'))
 
         self.toolButton_6.clicked.connect(self.next_page_data)
@@ -107,14 +107,14 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         self.tableWidget_2.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
 
         self.toolButton_7.setEnabled(False)
-        if DATAPAGES == 1:
+        if DATAPAGES <= 1:
             self.toolButton_6.setEnabled(False)
-        self.label.setText(str(1) + '/' + str(DATAPAGES))
+        self.label.setText(str(1) + '/' + str(DATAPAGES or 1))
 
         self.toolButton_9.setEnabled(False)
-        if BILLPAGES == 1:
+        if BILLPAGES <= 1:
             self.toolButton_8.setEnabled(False)
-        self.label_2.setText(str(1) + '/' + str(BILLPAGES))
+        self.label_2.setText(str(1) + '/' + str(BILLPAGES or 1))
 
     def next_page_data(self):
         if self.current_data_index + 1 < DATAPAGES:
@@ -172,10 +172,10 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             return
         value, ok = QInputDialog.getInt(self, "正在充值", "请输入充值金额:", 0, 0, 10000, 10)
         if ok:
-            reply = QMessageBox.information(self, "充值确认",
+            reply = MyQMessageBox( "充值确认",
                                             "正在给 " + self.tableWidget.item(index, 1).text() + " 充值" + str(
                                                 value) + '元，是否充值',
-                                            QMessageBox.Yes | QMessageBox.No)
+                                            '确认','取消')
             if reply == 16384:
                 person = mysql.query('user_tb', '_id', self.tableWidget.item(index, 0).text())
                 balance = float(person[0][4]) + value
@@ -193,20 +193,21 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
     def consume(self):
         index = self.tableWidget.currentRow()
         if index < 0:
-            QMessageBox.information(self, "温馨提示", "请先选择要消费的会员", QMessageBox.Yes)
+            messageBox = QMessageBox()
+            messageBox.setWindowTitle('温馨提示')
+            messageBox.setText('请先选择要消费的会员')
+            messageBox.setStandardButtons(QMessageBox.Yes)
+            buttonY = messageBox.button(QMessageBox.Yes)
+            buttonY.setText('好的')
+            messageBox.exec_()
             return
         value, ok = QInputDialog.getInt(self, "正在消费", "请输入消费金额:", 0, 0, 10000, 10)
 
         if ok:
-            msgbox = QMessageBox()
-            msgbox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-            msgbox.button(QMessageBox.Yes).setText('确认')
-            msgbox.button(QMessageBox.No).setText('取消')
+            reply = MyQMessageBox("消费确认","确认 " + self.tableWidget.item(index, 1).text() + " 消费了" + str(
+                                      value) + '元?',
+                                  '确认', '取消')
 
-            reply = msgbox.information(self, "消费确认",
-                                       "确认 " + self.tableWidget.item(index, 1).text() + " 消费了" + str(
-                                           value) + '元?',
-                                       QMessageBox.Yes | QMessageBox.No)
             if reply == 16384:
                 person = mysql.query('user_tb', '_id', self.tableWidget.item(index, 0).text())
                 balance = float(person[0][4]) - value
@@ -231,6 +232,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
     def add_person(self):
         max_card = mysql.max('bill_tb')[0][0] or 0
         AddWindow.lineEdit_2.setPlaceholderText('当前最高卡号：' + str(max_card) + '，推荐填' + str(int(max_card) + 1))
+        AddWindow.lineEdit.setFocus()
         AddWindow.show()
 
     def add_more_person(self):
@@ -244,7 +246,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             QMessageBox.information(self, "温馨提示", "请先选择要删除的账户，可按Ctrl多选", QMessageBox.Yes)
             return
         items = self.tableWidget.selectedItems()
-        reply = QMessageBox.information(self, "提示", "确定删除已选中的会员？", QMessageBox.Yes | QMessageBox.No)
+        reply = MyQMessageBox("提示", "确定删除已选中的会员？", '确认','取消')
         if reply == 16384:
             for i in range(int((len(items) + 1) / COLUMN)):
                 mysql.del_person(items[i * COLUMN].text())
@@ -292,19 +294,17 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             self.is_search = True
             self.horizontalFrame.hide()
 
-    def search_bill(self, id=None, text=None, card=None):
-        line = self.lineEdit.text()
-        if text:
-            line = text
-        if not line:
-            QMessageBox.information(self, "温馨提示", "请输入姓名、手机号或卡号（支持模糊搜索）", QMessageBox.Yes)
-            return
+    def search_bill(self, id=None, card=None):
 
         if id:
             id = mysql.query('bill_tb', 'id', id)
         elif card:
             id = mysql.query('bill_tb', 'card', card)
         else:
+            line = self.lineEdit.text()
+            if not line:
+                QMessageBox.information(self, "温馨提示", "请输入姓名、手机号或卡号（支持模糊搜索）", QMessageBox.Yes)
+                return
             id = mysql.like('bill_tb', 'name', line) + mysql.like('bill_tb', 'card', line)
             if len(line) >= 3:
                 id += mysql.like('bill_tb', 'phone', line)
@@ -334,10 +334,16 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             return True
 
     def search_data_by_card(self):
-        self.search_data(card=self.lineEdit.text())
+        if self.lineEdit.text().isdigit():
+            self.search_data(card=self.lineEdit.text())
+        else:
+            QMessageBox.information(self, "温馨提示", "请输入正确的卡号，仅支持数字", QMessageBox.Yes)
 
     def search_bill_by_card(self):
-        self.search_bill(card=self.lineEdit.text())
+        if self.lineEdit.text().isdigit():
+            self.search_bill(card=self.lineEdit.text())
+        else:
+            QMessageBox.information(self, "温馨提示", "请输入正确的卡号，仅支持数字", QMessageBox.Yes)
 
     def load_initial_data(self, last_index=None):
         self.horizontalFrame.show()
@@ -360,26 +366,27 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             for i in range(length):
                 srow.append(rows[i * DATA_PER_PAGE:DATA_PER_PAGE * (i + 1)])
             rows = srow
-        try:
-            for row in rows[self.current_data_index]:
-                inx = rows[self.current_data_index].index(row)
-                self.tableWidget.insertRow(inx)
-                for i in range(6):
-                    item = QTableWidgetItem()
-                    if str(row[i]).isdigit:  # 使得数字排序能够正常的运行
-                        item.setData(Qt.DisplayRole, row[i])
-                    else:
-                        item.setText(row[i])
-                    item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # 无法编辑
-                    item.setTextAlignment(Qt.AlignCenter)
-                    self.tableWidget.setItem(inx, i, item)
-                    del item
-            if last_index:
-                self.tableWidget.setCurrentIndex(last_index)
-        except:
-            QMessageBox.information(self, "警告", "我们遇到点问题，正在刷新页面", QMessageBox.Yes)
-            self.current_data_index = 0
-            self.load_initial_data()
+        if rows:
+            try:
+                for row in rows[self.current_data_index]:
+                    inx = rows[self.current_data_index].index(row)
+                    self.tableWidget.insertRow(inx)
+                    for i in range(6):
+                        item = QTableWidgetItem()
+                        if str(row[i]).isdigit:  # 使得数字排序能够正常的运行
+                            item.setData(Qt.DisplayRole, row[i])
+                        else:
+                            item.setText(row[i])
+                        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # 无法编辑
+                        item.setTextAlignment(Qt.AlignCenter)
+                        self.tableWidget.setItem(inx, i, item)
+                        del item
+                if last_index:
+                    self.tableWidget.setCurrentIndex(last_index)
+            except:
+                QMessageBox.information(self, "警告", "我们遇到点问题，正在刷新页面", QMessageBox.Yes)
+                self.current_data_index = 0
+                self.load_initial_data()
 
         self.is_search = False
         end = time.clock()
@@ -405,26 +412,27 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             for i in range(length):
                 srow.append(rows[i * BILL_PER_PAGE:BILL_PER_PAGE * (i + 1)])
             rows = srow
-        try:
-            for row in rows[BILLPAGES - self.current_bill_index - 1]:
-                inx = rows[BILLPAGES - self.current_bill_index - 1].index(row)
-                self.tableWidget_2.insertRow(inx)
-                for i in range(8):
+        if rows:
+            try:
+                for row in rows[BILLPAGES - self.current_bill_index - 1]:
+                    inx = rows[BILLPAGES - self.current_bill_index - 1].index(row)
+                    self.tableWidget_2.insertRow(inx)
+                    for i in range(8):
 
-                    item = QTableWidgetItem()
-                    if str(row[i]).isdigit:  # 使得数字排序能够正常的运行
-                        item.setData(Qt.DisplayRole, row[i])
-                    else:
-                        item.setText(row[i])
+                        item = QTableWidgetItem()
+                        if str(row[i]).isdigit:  # 使得数字排序能够正常的运行
+                            item.setData(Qt.DisplayRole, row[i])
+                        else:
+                            item.setText(row[i])
 
-                    item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # 无法编辑
-                    item.setTextAlignment(Qt.AlignCenter)
-                    self.tableWidget_2.setItem(inx, i, item)
-                    del item
-        except:
-            QMessageBox.information(self, "警告", "我们遇到点问题，正在刷新页面", QMessageBox.Yes)
-            self.current_bill_index = 0
-            self.load_initial_bill()
+                        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # 无法编辑
+                        item.setTextAlignment(Qt.AlignCenter)
+                        self.tableWidget_2.setItem(inx, i, item)
+                        del item
+            except:
+                QMessageBox.information(self, "警告", "我们遇到点问题，正在刷新页面", QMessageBox.Yes)
+                self.current_bill_index = 0
+                self.load_initial_bill()
         self.tableWidget_2.sortItems(1, Qt.DescendingOrder)
 
     def generate_menu(self, pos):
@@ -451,7 +459,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
                 DetailWindow.show()
 
             elif action == item2:
-                if self.search_bill(id=self.tableWidget.item(row_num, 0).text(), text=' '):
+                if self.search_bill(id=self.tableWidget.item(row_num, 0).text()):
                     self.tabWidget.setCurrentIndex(1)  # 切换界面
 
 
@@ -460,7 +468,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
                     message = "确定删除？"
                 else:
                     message = "检测到此会员尚有余额，删除会将余额清零，是否继续？"
-                reply = QMessageBox.information(self, "提示", message, QMessageBox.Yes | QMessageBox.No)
+                reply = MyQMessageBox( "提示", message, '确认','取消')
                 if reply == 16384:
                     mysql.del_person(self.tableWidget.item(row_num, 0).text())
                     bills.person_out(str(float(self.tableWidget.item(row_num, 4).text())),
@@ -543,6 +551,28 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
                 pass
 
 
+def MyQMessageBox(title, text, button1, button2=None):
+    messageBox = QMessageBox()
+    messageBox.setWindowTitle(title)
+    messageBox.setText(text)
+    if button2:
+        messageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        buttonY = messageBox.button(QMessageBox.Yes)
+        buttonY.setText(button1)
+        buttonN = messageBox.button(QMessageBox.No)
+        buttonN.setText(button2)
+    else:
+        messageBox.setStandardButtons(QMessageBox.Yes)
+        buttonY = messageBox.button(QMessageBox.Yes)
+        buttonY.setText(button1)
+
+    messageBox.exec_()
+    if messageBox.clickedButton() == buttonY:
+        return 16384
+    else:
+        return 0
+
+
 class AddWindow(QDialog, add_person_ui.Ui_Form):
     def __init__(self):
         QDialog.__init__(self)
@@ -557,11 +587,11 @@ class AddWindow(QDialog, add_person_ui.Ui_Form):
         self.lineEdit_1.textChanged.connect(lambda: self.label_4.setText(str(len(self.lineEdit_1.text())) + '/11位'))
 
     def add_person(self):
-        name = self.lineEdit.text()
-        phone = self.lineEdit_1.text()
-        card = self.lineEdit_2.text()
+        name = self.lineEdit.text().strip()
+        phone = self.lineEdit_1.text().strip()
+        card = self.lineEdit_2.text().strip()
         balance = self.doubleSpinBox.text() or 0
-        type = self.lineEdit_3.text()
+        type = self.lineEdit_3.text().strip()
 
         if phone != '' and mysql.query_str('user_tb', 'phone', phone):
             QMessageBox.information(self, "温馨提示", "手机号已存在。", QMessageBox.Yes)
@@ -569,13 +599,16 @@ class AddWindow(QDialog, add_person_ui.Ui_Form):
         if card == '':
             QMessageBox.information(self, "温馨提示", "请填写卡号", QMessageBox.Yes)
             return
+        if not card.isdigit():
+            QMessageBox.information(self, "温馨提示", "请填写数字", QMessageBox.Yes)
+            return
         if mysql.query('user_tb', 'card', card):
             QMessageBox.information(self, "温馨提示", "卡号已存在。", QMessageBox.Yes)
             return
 
         mysql.add_person(name, phone, card, balance, type)
 
-        id = mysql.query_str('user_tb', 'phone', phone) or mysql.query('user_tb', 'card', card)
+        id = mysql.query('user_tb', 'card', card)
 
         if id:
             bills.person_in(str(balance), name, phone, card, balance, id[0][0])
@@ -633,11 +666,11 @@ class AddMoreWindow(QDialog, add_person_ui.Ui_Form):
 
     def add_person(self):
 
-        name = self.lineEdit.text()
-        phone = self.lineEdit_1.text()
-        card = self.lineEdit_2.text()
+        name = self.lineEdit.text().strip()
+        phone = self.lineEdit_1.text().strip()
+        card = self.lineEdit_2.text().strip()
         balance = self.doubleSpinBox.text() or 0
-        type = self.lineEdit_3.text()
+        type = self.lineEdit_3.text().strip()
 
         if phone != '' and mysql.query_str('user_tb', 'phone', phone):
             QMessageBox.information(self, "温馨提示", "手机号已存在。", QMessageBox.Yes)
@@ -645,13 +678,16 @@ class AddMoreWindow(QDialog, add_person_ui.Ui_Form):
         if card == '':
             QMessageBox.information(self, "温馨提示", "请填写卡号", QMessageBox.Yes)
             return
+        if not card.isdigit():
+            QMessageBox.information(self, "温馨提示", "请填写数字", QMessageBox.Yes)
+            return
         if mysql.query('user_tb', 'card', card):
             QMessageBox.information(self, "温馨提示", "卡号已存在。", QMessageBox.Yes)
             return
 
         mysql.add_person(name, phone, card, balance, type)
 
-        id = mysql.query_str('user_tb', 'phone', phone) or mysql.query('user_tb', 'card', card)
+        id = mysql.query('user_tb', 'card', card)
 
         if id:
             bills.person_in(str(balance), name, phone, card, balance, id[0][0])
@@ -693,11 +729,11 @@ class DetailWindow(QDialog, add_person_ui.Ui_Form):
 
     def add_person(self):
 
-        name = self.lineEdit.text()
-        phone = self.lineEdit_1.text()
-        card = self.lineEdit_2.text()
+        name = self.lineEdit.text().strip()
+        phone = self.lineEdit_1.text().strip()
+        card = self.lineEdit_2.text().strip()
         balance = self.doubleSpinBox.text()
-        type = self.lineEdit_3.text()
+        type = self.lineEdit_3.text().strip()
 
         if phone != '' and mysql.query_str('user_tb', 'phone', phone) and phone != DetailWindow.phone:
             QMessageBox.information(self, "温馨提示", "手机号已存在。", QMessageBox.Yes)
@@ -728,23 +764,12 @@ class ConsumeWindow(QDialog, consume_ui.Ui_Form):
     def __init__(self):
         QDialog.__init__(self)
         self.setupUi(self)
-        # self.checkBox.clicked.connect(self.check_checkbox)
-        # self.checkBox_2.clicked.connect(self.check_checkbox)
-        # self.checkBox_3.clicked.connect(self.check_checkbox)
-        # self.checkBox_4.clicked.connect(self.check_checkbox)
+
         self.pushButton.clicked.connect(self.submit)
 
     def check_checkbox(self):
         self.cost = 0
-        # if self.checkBox.checkState():
-        #     self.cost += COST_1
-        # if self.checkBox_2.checkState():
-        #     self.cost += COST_2
-        # if self.checkBox_3.checkState():
-        #     self.cost += COST_3
-        # if self.checkBox_4.checkState():
-        #     self.cost += COST_4
-        # self.label.setText('总金额：' + str(self.cost) + '，SVIP优惠价格：' + str(self.cost * 0.75))
+
 
     def submit(self):
 

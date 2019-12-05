@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>会员管理系统</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../resources/images.qrc">
+    <normaloff>:/main/datamanager.ico</normaloff>:/main/datamanager.ico</iconset>
+  </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonTextUnderIcon</enum>
   </property>

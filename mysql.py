@@ -11,13 +11,15 @@
 import random
 import sqlite3
 
-
 # import configparser
 
 # # 读取config
 # conf = configparser.ConfigParser()
 # conf.read('config.ini', encoding="utf-8-sig")
 # items = conf.get("DETAIL", "columns").split('，')
+import time
+
+import bills
 
 
 def init_database():
@@ -219,7 +221,7 @@ def generate_card(type):
     :return:
     """
     pass
-
+#
 #
 # from tqdm import tqdm
 #
@@ -277,21 +279,27 @@ def generate_card(type):
 #       '迹', '妹', '藸', '遍', '盖', '副', '坦', '牌', '江', '顺', '秋', '萨', '菜', '划', '授', '归', '浪', '听', '凡', '预', ]
 #
 # a = range(13000000000, 17800000000)
-# b = random.sample(a, 5000)
-
+# b = random.sample(a, 50)
+#
 # init_database()
 #
-# for i in tqdm(range(5000)):
+# def person_in(cost, name, phone, card, balance, id):
+#     # balance = float(mysql.query('balance_tb', '_id', '1')[0][2])
+#     # balance -= float(cost)
+#     add_bill(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+#                    '建户', '+' + str(cost), str(balance), str(name), str(phone), str(card), id)
+#
+# for i in tqdm(range(50)):
 #     j = random.randint(0, 2)
 #     if j != 0:
-#         x = random.randint(0, len(a1)-1)
-#         y = random.randint(0, len(a2)-1)
-#         z = random.randint(0, len(a2)-1)
+#         x = random.randint(0, len(a1) - 1)
+#         y = random.randint(0, len(a2) - 1)
+#         z = random.randint(0, len(a2) - 1)
 #         name = a1[x] + a2[y] + a2[z]
 #     else:
-#         x = random.randint(0, len(a1)-1)
-#         y = random.randint(0, len(a2)-1)
+#         x = random.randint(0, len(a1) - 1)
+#         y = random.randint(0, len(a2) - 1)
 #         name = a1[x] + a2[y]
 #
 #     add_person(name, b[i], str(i), '0', '')
-#
+#     person_in('0', name, b[i], str(i), '0', str(i + 1))
