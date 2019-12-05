@@ -30,7 +30,7 @@ import webbrowser
 import requests
 
 COLUMN = 6
-CURRENT_VERSION = 'v1.1.0'
+CURRENT_VERSION = 'v1.5.0'
 
 DATAPAGES = 0
 BILLPAGES = 0
