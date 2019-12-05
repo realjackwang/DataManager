@@ -201,7 +201,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             buttonY.setText('好的')
             messageBox.exec_()
             return
-        value, ok = QInputDialog.getInt(self, "正在消费", "请输入消费金额:", 0, 0, 10000, 10)
+        value, ok = QInputDialog.getDouble(self, "正在消费", "请输入消费金额:", 0, 0, 1000000, 2)
 
         if ok:
             reply = MyQMessageBox("消费确认","确认 " + self.tableWidget.item(index, 1).text() + " 消费了" + str(
